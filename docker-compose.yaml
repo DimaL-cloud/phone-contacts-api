@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+  phone_contacts_db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: iasa-admin
+      POSTGRES_PASSWORD: iasaYZJvLJM
+      POSTGRES_DB: phone_contacts_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
