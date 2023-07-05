@@ -6,10 +6,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.dmytrolutsyuk.phonecontactsapi.dto.UserDTO;
+import ua.dmytrolutsyuk.phonecontactsapi.entity.ConfirmationToken;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.Role;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.service.AuthenticationService;
+import ua.dmytrolutsyuk.phonecontactsapi.service.ConfirmationTokenService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.JWTService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.UserService;
 
@@ -19,14 +21,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserService userService;
     private final JWTService jwtService;
+    private final ConfirmationTokenService confirmationTokenService;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
+    @Override
     public AuthenticationResponse register(UserDTO userDTO) {
         User user = User.builder()
                 .username(userDTO.getLogin())
+                .email(userDTO.getEmail())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
                 .role(Role.USER)
                 .build();
@@ -35,9 +40,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String token = jwtService.generateToken(user);
 
+        confirmationTokenService.sendConfirmationTokenToUser(user);
+
         return new AuthenticationResponse(token);
     }
 
+    @Override
+    public void confirmEmail(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService.verifyConfirmationToken(token);
+
+        userService.enableUser(confirmationToken.getUser().getEmail());
+    }
+
+    @Override
     public AuthenticationResponse login(UserDTO userDTO) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userDTO.getLogin(),

@@ -9,3 +9,8 @@ spring:
   servlet:
     multipart:
       max-file-size: 20MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+
+network-address: http://localhost:8080

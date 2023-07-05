@@ -7,4 +7,6 @@ public interface UserService {
     User getUserByUsername(String username);
 
     void saveUser(User user);
+
+    void enableUser(String email);
 }

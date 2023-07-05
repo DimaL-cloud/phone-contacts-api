@@ -7,9 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactAlreadyExistsException;
-import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactNotFoundException;
-import ua.dmytrolutsyuk.phonecontactsapi.exception.UserNotFoundException;
+import ua.dmytrolutsyuk.phonecontactsapi.exception.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +39,21 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(value = {UserNotFoundException.class})
     public ErrorResponse handleUserNotFoundException(UserNotFoundException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = {UserNotEnabledException.class})
+    public ErrorResponse handleUserNotEnabledException(UserNotEnabledException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = {UserAlreadyExistsException.class})
+    public ErrorResponse handleProvidedEmailExistsException(UserAlreadyExistsException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = {ConfirmationTokenNotFoundException.class})
+    public ErrorResponse handleConfirmationTokenNotFoundException(ConfirmationTokenNotFoundException e) {
         return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
     }
 }

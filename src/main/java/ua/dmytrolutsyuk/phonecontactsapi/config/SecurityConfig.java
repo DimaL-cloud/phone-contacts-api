@@ -15,7 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ua.dmytrolutsyuk.phonecontactsapi.config.filter.JWTAuthenticationFilter;
+import ua.dmytrolutsyuk.phonecontactsapi.filter.JWTAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +30,15 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**")
+                .requestMatchers(
+                        "/auth/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/swagger-resources",
+                        "/v3/api-docs/**",
+                        "/proxy/**"
+                )
                 .permitAll()
                 .anyRequest()
                 .authenticated()

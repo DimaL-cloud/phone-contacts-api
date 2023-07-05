@@ -7,5 +7,7 @@ public interface AuthenticationService {
 
     AuthenticationResponse register(UserDTO userDTO);
 
+    void confirmEmail(String token);
+
     AuthenticationResponse login(UserDTO userDTO);
 }
