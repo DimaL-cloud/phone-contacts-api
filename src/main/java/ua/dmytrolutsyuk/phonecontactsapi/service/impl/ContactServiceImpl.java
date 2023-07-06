@@ -3,14 +3,16 @@ package ua.dmytrolutsyuk.phonecontactsapi.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ua.dmytrolutsyuk.phonecontactsapi.dto.ContactDTO;
-import ua.dmytrolutsyuk.phonecontactsapi.mapper.ContactMapper;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.Contact;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactAlreadyExistsException;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactNotFoundException;
+import ua.dmytrolutsyuk.phonecontactsapi.mapper.ContactMapper;
 import ua.dmytrolutsyuk.phonecontactsapi.repository.ContactRepository;
 import ua.dmytrolutsyuk.phonecontactsapi.service.ContactService;
+import ua.dmytrolutsyuk.phonecontactsapi.service.ImageService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.JWTService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.UserService;
 
@@ -24,6 +26,7 @@ public class ContactServiceImpl implements ContactService {
 
     private final UserService userService;
     private final JWTService jwtService;
+    private final ImageService imageService;
 
     @Override
     public List<ContactDTO> getAllContacts(String token) {
@@ -38,7 +41,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void addContact(ContactDTO contactDTO, String token) {
+    public void addContact(ContactDTO contactDTO, MultipartFile image, String token) {
         Contact contact = ContactMapper.INSTANCE.DTOToContact(contactDTO);
 
         String username = jwtService.extractUsername(token);
@@ -46,9 +49,12 @@ public class ContactServiceImpl implements ContactService {
 
         contact.setUser(user);
 
-        if (contactRepository.findByNameAndUser(contact.getName(), user).isPresent()) {
+        if (contactRepository.existsContactByNameAndUser(contact.getName(), user)) {
             throw new ContactAlreadyExistsException(contact.getName());
         }
+
+        String imageUrl = imageService.saveImage(image, contact.getUuid());
+        contact.setImageUrl(imageUrl);
 
         contactRepository.save(contact);
     }
@@ -59,11 +65,13 @@ public class ContactServiceImpl implements ContactService {
         String username = jwtService.extractUsername(token);
         User user = userService.getUserByUsername(username);
 
+        user.getContacts().forEach(contact -> imageService.deleteImage(contact.getUuid()));
+
         contactRepository.deleteAllByUser(user);
     }
 
     @Override
-    public void updateContact(ContactDTO contactDTO, String token) {
+    public void updateContact(ContactDTO contactDTO, MultipartFile image, String token) {
         Contact updatedContact = ContactMapper.INSTANCE.DTOToContact(contactDTO);
 
         String username = jwtService.extractUsername(token);
@@ -74,6 +82,10 @@ public class ContactServiceImpl implements ContactService {
                 .orElseThrow(() -> new ContactNotFoundException(contactDTO.getName()));
 
         updatedContact.setId(existingContact.getId());
+        updatedContact.setUser(user);
+        updatedContact.setUuid(existingContact.getUuid());
+
+        imageService.saveImage(image, updatedContact.getUuid());
 
         contactRepository.save(updatedContact);
     }

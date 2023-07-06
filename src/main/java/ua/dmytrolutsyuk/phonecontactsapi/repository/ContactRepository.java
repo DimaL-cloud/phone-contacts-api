@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
     Optional<Contact> findByNameAndUser(String name, User user);
 
+    boolean existsContactByNameAndUser(String name, User user);
+
     void deleteAllByUser(User user);
 }

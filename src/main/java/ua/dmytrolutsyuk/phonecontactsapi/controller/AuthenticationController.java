@@ -1,6 +1,7 @@
 package ua.dmytrolutsyuk.phonecontactsapi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid UserDTO userDTO) {
         return new ResponseEntity<>(authenticationService.register(userDTO), HttpStatus.OK);
     }
 
@@ -32,7 +33,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @Operation(summary = "Login user")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid UserDTO userDTO) {
         return new ResponseEntity<>(authenticationService.login(userDTO), HttpStatus.OK);
     }
 }

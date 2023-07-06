@@ -56,4 +56,14 @@ public class ControllerExceptionHandler {
     public ErrorResponse handleConfirmationTokenNotFoundException(ConfirmationTokenNotFoundException e) {
         return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
     }
+
+    @ExceptionHandler(value = {ImageUploadException.class})
+    public ErrorResponse handleImageUploadException(ImageUploadException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = {ImageNotFoundException.class})
+    public ErrorResponse handleImageNotFoundException(ImageNotFoundException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
 }

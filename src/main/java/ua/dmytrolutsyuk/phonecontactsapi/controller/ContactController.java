@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ua.dmytrolutsyuk.phonecontactsapi.dto.ContactDTO;
 import ua.dmytrolutsyuk.phonecontactsapi.service.ContactService;
 
@@ -26,11 +28,12 @@ public class ContactController {
         return new ResponseEntity<>(contacts, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Add a new contact")
-    public ResponseEntity<Void> addContact(@RequestBody @Valid ContactDTO contactDTO,
+    public ResponseEntity<Void> addContact(@RequestPart("contact") @Valid ContactDTO contactDTO,
+                                           @RequestPart("image") MultipartFile image,
                                            @RequestHeader(name = "Authorization") String token) {
-        contactService.addContact(contactDTO, token.substring(7));
+        contactService.addContact(contactDTO, image, token.substring(7));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -43,11 +46,12 @@ public class ContactController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Update a contact")
-    public ResponseEntity<Void> updateContact(@RequestBody @Valid ContactDTO contactDTO,
+    public ResponseEntity<Void> updateContact(@RequestPart("contact") @Valid ContactDTO contactDTO,
+                                              @RequestPart("image") MultipartFile image,
                                               @RequestHeader(name = "Authorization") String token) {
-        contactService.updateContact(contactDTO, token.substring(7));
+        contactService.updateContact(contactDTO, image, token.substring(7));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

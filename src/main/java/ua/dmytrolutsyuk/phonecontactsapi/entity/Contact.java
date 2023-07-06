@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "contacts")
@@ -33,4 +34,8 @@ public class Contact {
     @CollectionTable(name = "phone_numbers", joinColumns = @JoinColumn(name = "contact_id"))
     @Column(name = "number")
     private Set<String> phoneNumbers;
+
+    private String imageUrl;
+
+    private UUID uuid = UUID.randomUUID();
 }
