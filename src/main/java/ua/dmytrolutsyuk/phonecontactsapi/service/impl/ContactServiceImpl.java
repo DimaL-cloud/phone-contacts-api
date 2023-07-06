@@ -9,6 +9,8 @@ import ua.dmytrolutsyuk.phonecontactsapi.entity.Contact;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactAlreadyExistsException;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactNotFoundException;
+import ua.dmytrolutsyuk.phonecontactsapi.exception.EmailsAlreadyExistException;
+import ua.dmytrolutsyuk.phonecontactsapi.exception.PhoneNumbersAlreadyExistException;
 import ua.dmytrolutsyuk.phonecontactsapi.mapper.ContactMapper;
 import ua.dmytrolutsyuk.phonecontactsapi.repository.ContactRepository;
 import ua.dmytrolutsyuk.phonecontactsapi.service.ContactService;
@@ -51,6 +53,14 @@ public class ContactServiceImpl implements ContactService {
 
         if (contactRepository.existsContactByNameAndUser(contact.getName(), user)) {
             throw new ContactAlreadyExistsException(contact.getName());
+        }
+
+        if (contactRepository.existsContactByEmailsInAndUser(contact.getEmails(), user)) {
+            throw new EmailsAlreadyExistException();
+        }
+
+        if (contactRepository.existsContactByPhoneNumbersInAndUser(contact.getPhoneNumbers(), user)) {
+            throw new PhoneNumbersAlreadyExistException();
         }
 
         String imageUrl = imageService.saveImage(image, contact.getUuid());

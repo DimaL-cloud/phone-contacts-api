@@ -66,4 +66,14 @@ public class ControllerExceptionHandler {
     public ErrorResponse handleImageNotFoundException(ImageNotFoundException e) {
         return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
     }
+
+    @ExceptionHandler(value = {EmailsAlreadyExistException.class})
+    public ErrorResponse handleEmailAlreadyExistsException(EmailsAlreadyExistException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = {PhoneNumbersAlreadyExistException.class})
+    public ErrorResponse handlePhoneNumberAlreadyExistsException(PhoneNumbersAlreadyExistException e) {
+        return new ErrorResponseImpl(e.getErrorCode(), e.getMessage());
+    }
 }

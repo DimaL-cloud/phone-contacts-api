@@ -19,17 +19,23 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
+    @Column(name = "password", unique = false, nullable = false)
     private String password;
 
+    @Column(name = "is_enabled", unique = false, nullable = false)
     private boolean isEnabled;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", unique = false, nullable = false)
     private Role role;
 
     @OneToMany(mappedBy = "user")

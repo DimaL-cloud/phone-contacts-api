@@ -17,8 +17,10 @@ public class Contact {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
+    @Column(name = "name", unique = false, nullable = false)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,15 +29,17 @@ public class Contact {
 
     @ElementCollection
     @CollectionTable(name = "emails", joinColumns = @JoinColumn(name = "contact_id"))
-    @Column(name = "email")
+    @Column(name = "email", unique = false, nullable = false)
     private Set<String> emails;
 
     @ElementCollection
     @CollectionTable(name = "phone_numbers", joinColumns = @JoinColumn(name = "contact_id"))
-    @Column(name = "number")
+    @Column(name = "phone_number", unique = false, nullable = false)
     private Set<String> phoneNumbers;
 
+    @Column(name = "image_url", unique = true, nullable = false)
     private String imageUrl;
 
+    @Column(name = "uuid", unique = true, nullable = false)
     private UUID uuid = UUID.randomUUID();
 }
