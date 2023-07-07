@@ -5,14 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.multipart.MultipartFile;
-import ua.dmytrolutsyuk.phonecontactsapi.dto.ContactDTO;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.Contact;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactAlreadyExistsException;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ContactNotFoundException;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.EmailsAlreadyExistException;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.PhoneNumbersAlreadyExistException;
-import ua.dmytrolutsyuk.phonecontactsapi.mapper.ContactMapper;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.ContactRequest;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.ContactResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.repository.ContactRepository;
 
 import java.util.*;
@@ -41,7 +41,7 @@ public class ContactServiceTest {
     private ImageService imageService;
 
     @Test
-    void getAllContacts_ValidToken_ThenReturnContactDTOList() {
+    void getAllContacts_ValidToken_ThenReturnContactResponseList() {
         String token = "validToken";
         String username = "user";
 
@@ -59,12 +59,22 @@ public class ContactServiceTest {
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
 
-        List<ContactDTO> expected = Arrays.asList(
-                ContactMapper.INSTANCE.contactToContactDTO(contact1),
-                ContactMapper.INSTANCE.contactToContactDTO(contact2)
+        List<ContactResponse> expected = List.of(
+                new ContactResponse(
+                        contact1.getName(),
+                        contact1.getEmails(),
+                        contact1.getPhoneNumbers(),
+                        contact1.getImageUrl()
+                ),
+                new ContactResponse(
+                        contact2.getName(),
+                        contact2.getEmails(),
+                        contact2.getPhoneNumbers(),
+                        contact2.getImageUrl()
+                )
         );
 
-        List<ContactDTO> actual = contactService.getAllContacts(token);
+        List<ContactResponse> actual = contactService.getAllContacts(token);
 
         assertEquals(expected, actual);
     }
@@ -74,10 +84,11 @@ public class ContactServiceTest {
         String token = "validToken";
         String username = "user";
 
-        ContactDTO contactDTO = new ContactDTO("New Contact",
+        ContactRequest contactRequest = new ContactRequest(
+                "New Contact",
                 new HashSet<>(List.of("email@example.com")),
-                new HashSet<>(List.of("1234567890")),
-                null);
+                new HashSet<>(List.of("1234567890"))
+        );
 
         MultipartFile image = mock(MultipartFile.class);
 
@@ -86,11 +97,11 @@ public class ContactServiceTest {
 
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
-        when(contactRepository.existsContactByNameAndUser(contactDTO.getName(), user)).thenReturn(false);
-        when(contactRepository.existsContactByEmailsInAndUser(contactDTO.getEmails(), user)).thenReturn(false);
-        when(contactRepository.existsContactByPhoneNumbersInAndUser(contactDTO.getPhoneNumbers(), user)).thenReturn(false);
+        when(contactRepository.existsContactByNameAndUser(contactRequest.getName(), user)).thenReturn(false);
+        when(contactRepository.existsContactByEmailsInAndUser(contactRequest.getEmails(), user)).thenReturn(false);
+        when(contactRepository.existsContactByPhoneNumbersInAndUser(contactRequest.getPhoneNumbers(), user)).thenReturn(false);
 
-        contactService.addContact(contactDTO, image, token);
+        contactService.addContact(contactRequest, image, token);
 
         verify(contactRepository, times(1)).save(any(Contact.class));
     }
@@ -100,10 +111,11 @@ public class ContactServiceTest {
         String token = "validToken";
         String username = "user";
 
-        ContactDTO contactDTO = new ContactDTO("Existing Contact",
+        ContactRequest contactRequest = new ContactRequest(
+                "Existing Contact",
                 new HashSet<>(List.of("email@example.com")),
-                new HashSet<>(List.of("1234567890")),
-                null);
+                new HashSet<>(List.of("1234567890"))
+        );
 
         MultipartFile image = mock(MultipartFile.class);
 
@@ -112,10 +124,10 @@ public class ContactServiceTest {
 
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
-        when(contactRepository.existsContactByNameAndUser(contactDTO.getName(), user)).thenReturn(true);
+        when(contactRepository.existsContactByNameAndUser(contactRequest.getName(), user)).thenReturn(true);
 
         assertThrows(ContactAlreadyExistsException.class, () ->
-                contactService.addContact(contactDTO, image, token));
+                contactService.addContact(contactRequest, image, token));
 
         verify(contactRepository, never()).save(any(Contact.class));
     }
@@ -125,10 +137,11 @@ public class ContactServiceTest {
         String token = "validToken";
         String username = "user";
 
-        ContactDTO contactDTO = new ContactDTO("New Contact",
+        ContactRequest contactRequest = new ContactRequest(
+                "New Contact",
                 new HashSet<>(List.of("existingEmail@example.com")),
-                new HashSet<>(List.of("1234567890")),
-                null);
+                new HashSet<>(List.of("1234567890"))
+        );
 
         MultipartFile image = mock(MultipartFile.class);
 
@@ -137,11 +150,11 @@ public class ContactServiceTest {
 
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
-        when(contactRepository.existsContactByNameAndUser(contactDTO.getName(), user)).thenReturn(false);
-        when(contactRepository.existsContactByEmailsInAndUser(contactDTO.getEmails(), user)).thenReturn(true);
+        when(contactRepository.existsContactByNameAndUser(contactRequest.getName(), user)).thenReturn(false);
+        when(contactRepository.existsContactByEmailsInAndUser(contactRequest.getEmails(), user)).thenReturn(true);
 
         assertThrows(EmailsAlreadyExistException.class, () ->
-                contactService.addContact(contactDTO, image, token));
+                contactService.addContact(contactRequest, image, token));
 
         verify(contactRepository, never()).save(any(Contact.class));
     }
@@ -151,10 +164,11 @@ public class ContactServiceTest {
         String token = "validToken";
         String username = "user";
 
-        ContactDTO contactDTO = new ContactDTO("New Contact",
+        ContactRequest contactRequest = new ContactRequest(
+                "New Contact",
                 new HashSet<>(List.of("email@example.com")),
-                new HashSet<>(List.of("existingPhoneNumber")),
-                null);
+                new HashSet<>(List.of("existingPhoneNumber"))
+        );
 
         MultipartFile image = mock(MultipartFile.class);
 
@@ -163,11 +177,11 @@ public class ContactServiceTest {
 
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
-        when(contactRepository.existsContactByNameAndUser(contactDTO.getName(), user)).thenReturn(false);
-        when(contactRepository.existsContactByPhoneNumbersInAndUser(contactDTO.getPhoneNumbers(), user)).thenReturn(true);
+        when(contactRepository.existsContactByNameAndUser(contactRequest.getName(), user)).thenReturn(false);
+        when(contactRepository.existsContactByPhoneNumbersInAndUser(contactRequest.getPhoneNumbers(), user)).thenReturn(true);
 
         assertThrows(PhoneNumbersAlreadyExistException.class, () ->
-                contactService.addContact(contactDTO, image, token));
+                contactService.addContact(contactRequest, image, token));
 
         verify(contactRepository, never()).save(any(Contact.class));
     }
@@ -202,10 +216,11 @@ public class ContactServiceTest {
         String token = "validToken";
         String username = "user";
 
-        ContactDTO contactDTO = new ContactDTO("Existing Contact",
+        ContactRequest contactRequest = new ContactRequest(
+                "Existing Contact",
                 new HashSet<>(List.of("email@example.com")),
-                new HashSet<>(List.of("1234567890")),
-                null);
+                new HashSet<>(List.of("1234567890"))
+        );
 
         MultipartFile image = mock(MultipartFile.class);
 
@@ -218,9 +233,9 @@ public class ContactServiceTest {
 
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
-        when(contactRepository.findByNameAndUser(contactDTO.getName(), user)).thenReturn(Optional.of(existingContact));
+        when(contactRepository.findByNameAndUser(contactRequest.getName(), user)).thenReturn(Optional.of(existingContact));
 
-        contactService.updateContact(contactDTO, image, token);
+        contactService.updateContact(contactRequest, image, token);
 
         verify(contactRepository, times(1)).save(any(Contact.class));
     }
@@ -230,10 +245,10 @@ public class ContactServiceTest {
         String token = "validToken";
         String username = "user";
 
-        ContactDTO contactDTO = new ContactDTO("Non-existing Contact",
+        ContactRequest contactRequest = new ContactRequest("Non-existing Contact",
                 new HashSet<>(List.of("email@example.com")),
-                new HashSet<>(List.of("1234567890")),
-                null);
+                new HashSet<>(List.of("1234567890"))
+        );
 
         MultipartFile image = mock(MultipartFile.class);
 
@@ -242,10 +257,10 @@ public class ContactServiceTest {
 
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.getUserByUsername(username)).thenReturn(user);
-        when(contactRepository.findByNameAndUser(contactDTO.getName(), user)).thenReturn(Optional.empty());
+        when(contactRepository.findByNameAndUser(contactRequest.getName(), user)).thenReturn(Optional.empty());
 
         assertThrows(ContactNotFoundException.class, () ->
-                contactService.updateContact(contactDTO, image, token));
+                contactService.updateContact(contactRequest, image, token));
 
         verify(contactRepository, never()).save(any(Contact.class));
     }

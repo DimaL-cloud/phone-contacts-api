@@ -8,7 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ua.dmytrolutsyuk.phonecontactsapi.dto.ContactDTO;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.ContactRequest;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.ContactResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.service.ContactService;
 
 import java.util.List;
@@ -22,18 +23,18 @@ public class ContactController {
 
     @GetMapping
     @Operation(summary = "Get all contacts")
-    public ResponseEntity<List<ContactDTO>> getAllContacts(@RequestHeader(name = "Authorization") String token) {
-        List<ContactDTO> contacts = contactService.getAllContacts(token.substring(7));
+    public ResponseEntity<List<ContactResponse>> getAllContacts(@RequestHeader(name = "Authorization") String token) {
+        List<ContactResponse> contacts = contactService.getAllContacts(token.substring(7));
 
         return new ResponseEntity<>(contacts, HttpStatus.OK);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Add a new contact")
-    public ResponseEntity<Void> addContact(@RequestPart("contact") @Valid ContactDTO contactDTO,
+    public ResponseEntity<Void> addContact(@RequestPart("contact_request") @Valid ContactRequest ContactRequest,
                                            @RequestPart("image") MultipartFile image,
                                            @RequestHeader(name = "Authorization") String token) {
-        contactService.addContact(contactDTO, image, token.substring(7));
+        contactService.addContact(ContactRequest, image, token.substring(7));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -48,10 +49,10 @@ public class ContactController {
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Update a contact")
-    public ResponseEntity<Void> updateContact(@RequestPart("contact") @Valid ContactDTO contactDTO,
+    public ResponseEntity<Void> updateContact(@RequestPart("contact_request") @Valid ContactRequest ContactRequest,
                                               @RequestPart("image") MultipartFile image,
                                               @RequestHeader(name = "Authorization") String token) {
-        contactService.updateContact(contactDTO, image, token.substring(7));
+        contactService.updateContact(ContactRequest, image, token.substring(7));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,4 +1,4 @@
-package ua.dmytrolutsyuk.phonecontactsapi.dto;
+package ua.dmytrolutsyuk.phonecontactsapi.payload.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -15,7 +15,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ContactDTO {
+public class ContactRequest {
 
     @NotBlank(message = "Name is mandatory")
     private String name;
@@ -27,6 +27,4 @@ public class ContactDTO {
     @NotNull(message = "Phone numbers cannot be null")
     @Size(min = 1, message = "At least one phone number is required")
     private Set<@PhoneNumber String> phoneNumbers;
-
-    private String imageUrl;
 }
