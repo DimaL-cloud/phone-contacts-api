@@ -2,7 +2,6 @@ package ua.dmytrolutsyuk.phonecontactsapi.service.impl;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.models.BlobItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +38,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImage(UUID uuid) {
-        BlobItem deletedBlobItem = imageContainerClient
+        imageContainerClient
                 .listBlobs()
                 .stream()
                 .filter(blobItem -> blobItem.getName().contains(uuid.toString()))
