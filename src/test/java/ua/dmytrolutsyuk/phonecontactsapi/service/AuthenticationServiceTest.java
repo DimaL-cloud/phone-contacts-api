@@ -7,10 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import ua.dmytrolutsyuk.phonecontactsapi.dto.UserDTO;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.ConfirmationToken;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ConfirmationTokenNotFoundException;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,13 +41,13 @@ public class AuthenticationServiceTest {
         String email = "test@example.com";
         String password = "password";
 
-        UserDTO userDTO = new UserDTO(login, email, password);
+        RegisterRequest registerRequest = new RegisterRequest(login, email, password);
 
         String token = "token";
 
         when(jwtService.generateToken(any(User.class))).thenReturn(token);
 
-        AuthenticationResponse response = authenticationService.register(userDTO);
+        AuthenticationResponse response = authenticationService.register(registerRequest);
 
         assertNotNull(response);
         assertEquals(token, response.getToken());
@@ -78,7 +79,7 @@ public class AuthenticationServiceTest {
         String login = "testUser";
         String password = "password";
 
-        UserDTO userDTO = new UserDTO(login, null, password);
+        LoginRequest loginRequest = new LoginRequest(login, password);
 
         User user = new User();
         when(userService.getUserByUsername(login)).thenReturn(user);
@@ -86,7 +87,7 @@ public class AuthenticationServiceTest {
         String token = "token";
         when(jwtService.generateToken(user)).thenReturn(token);
 
-        AuthenticationResponse response = authenticationService.login(userDTO);
+        AuthenticationResponse response = authenticationService.login(loginRequest);
 
         assertNotNull(response);
         assertEquals(token, response.getToken());

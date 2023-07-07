@@ -5,10 +5,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ua.dmytrolutsyuk.phonecontactsapi.dto.UserDTO;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.ConfirmationToken;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.Role;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.service.AuthenticationService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.ConfirmationTokenService;
@@ -28,11 +29,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthenticationResponse register(UserDTO userDTO) {
+    public AuthenticationResponse register(RegisterRequest registerRequest) {
         User user = User.builder()
-                .username(userDTO.getLogin())
-                .email(userDTO.getEmail())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .username(registerRequest.getLogin())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(Role.USER)
                 .build();
 
@@ -53,13 +54,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public AuthenticationResponse login(UserDTO userDTO) {
+    public AuthenticationResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userDTO.getLogin(),
-                userDTO.getPassword()
+                loginRequest.getLogin(),
+                loginRequest.getPassword()
         ));
 
-        User user = userService.getUserByUsername(userDTO.getLogin());
+        User user = userService.getUserByUsername(loginRequest.getLogin());
 
         String token = jwtService.generateToken(user);
 

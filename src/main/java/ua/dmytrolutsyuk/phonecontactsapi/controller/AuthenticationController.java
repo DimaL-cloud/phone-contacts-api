@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.dmytrolutsyuk.phonecontactsapi.dto.UserDTO;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.service.AuthenticationService;
 
@@ -19,8 +20,8 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid UserDTO userDTO) {
-        return new ResponseEntity<>(authenticationService.register(userDTO), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest registerRequest) {
+        return new ResponseEntity<>(authenticationService.register(registerRequest), HttpStatus.OK);
     }
 
     @GetMapping("/confirm-account")
@@ -33,7 +34,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @Operation(summary = "Login user")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid UserDTO userDTO) {
-        return new ResponseEntity<>(authenticationService.login(userDTO), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+        return new ResponseEntity<>(authenticationService.login(loginRequest), HttpStatus.OK);
     }
 }
