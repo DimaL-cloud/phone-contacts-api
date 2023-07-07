@@ -12,7 +12,8 @@ import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.exception.ConfirmationTokenNotFoundException;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
-import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.LoginResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.RegisterResponse;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -47,7 +48,7 @@ public class AuthenticationServiceTest {
 
         when(jwtService.generateToken(any(User.class))).thenReturn(token);
 
-        AuthenticationResponse response = authenticationService.register(registerRequest);
+        RegisterResponse response = authenticationService.register(registerRequest);
 
         assertNotNull(response);
         assertEquals(token, response.getToken());
@@ -87,7 +88,7 @@ public class AuthenticationServiceTest {
         String token = "token";
         when(jwtService.generateToken(user)).thenReturn(token);
 
-        AuthenticationResponse response = authenticationService.login(loginRequest);
+        LoginResponse response = authenticationService.login(loginRequest);
 
         assertNotNull(response);
         assertEquals(token, response.getToken());

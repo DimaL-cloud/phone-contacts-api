@@ -8,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
-import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.LoginResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.RegisterResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.service.AuthenticationService;
 
 @RestController
@@ -20,7 +21,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest registerRequest) {
+    public ResponseEntity<RegisterResponse> register(@RequestBody @Valid RegisterRequest registerRequest) {
         return new ResponseEntity<>(authenticationService.register(registerRequest), HttpStatus.OK);
     }
 
@@ -34,7 +35,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @Operation(summary = "Login user")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         return new ResponseEntity<>(authenticationService.login(loginRequest), HttpStatus.OK);
     }
 }

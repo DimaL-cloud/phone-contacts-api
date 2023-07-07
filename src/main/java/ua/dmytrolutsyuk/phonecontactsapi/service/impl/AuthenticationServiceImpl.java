@@ -10,7 +10,8 @@ import ua.dmytrolutsyuk.phonecontactsapi.entity.Role;
 import ua.dmytrolutsyuk.phonecontactsapi.entity.User;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
-import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.LoginResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.RegisterResponse;
 import ua.dmytrolutsyuk.phonecontactsapi.service.AuthenticationService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.ConfirmationTokenService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.JWTService;
@@ -29,7 +30,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthenticationResponse register(RegisterRequest registerRequest) {
+    public RegisterResponse register(RegisterRequest registerRequest) {
         User user = User.builder()
                 .username(registerRequest.getLogin())
                 .email(registerRequest.getEmail())
@@ -43,7 +44,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         confirmationTokenService.sendConfirmationTokenToUser(user);
 
-        return new AuthenticationResponse(token);
+        return new RegisterResponse(token);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public AuthenticationResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getLogin(),
                 loginRequest.getPassword()
@@ -64,6 +65,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String token = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(token);
+        return new LoginResponse(token);
     }
 }

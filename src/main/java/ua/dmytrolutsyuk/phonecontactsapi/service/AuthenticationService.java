@@ -2,13 +2,14 @@ package ua.dmytrolutsyuk.phonecontactsapi.service;
 
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.LoginRequest;
 import ua.dmytrolutsyuk.phonecontactsapi.payload.request.RegisterRequest;
-import ua.dmytrolutsyuk.phonecontactsapi.payload.response.AuthenticationResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.LoginResponse;
+import ua.dmytrolutsyuk.phonecontactsapi.payload.response.RegisterResponse;
 
 public interface AuthenticationService {
 
-    AuthenticationResponse register(RegisterRequest registerRequest);
+    RegisterResponse register(RegisterRequest registerRequest);
 
     void confirmEmail(String token);
 
-    AuthenticationResponse login(LoginRequest loginRequest);
+    LoginResponse login(LoginRequest loginRequest);
 }
