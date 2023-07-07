@@ -19,6 +19,7 @@ import ua.dmytrolutsyuk.phonecontactsapi.service.JWTService;
 import ua.dmytrolutsyuk.phonecontactsapi.service.UserService;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,16 +50,16 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public void addContact(ContactRequest contactRequest, MultipartFile image, String token) {
-        Contact contact = Contact.builder()
-                .name(contactRequest.getName())
-                .emails(contactRequest.getEmails())
-                .phoneNumbers(contactRequest.getPhoneNumbers())
-                .build();
-
         String username = jwtService.extractUsername(token);
         User user = userService.getUserByUsername(username);
 
-        contact.setUser(user);
+        Contact contact = Contact.builder()
+                .user(user)
+                .name(contactRequest.getName())
+                .emails(contactRequest.getEmails())
+                .phoneNumbers(contactRequest.getPhoneNumbers())
+                .uuid(UUID.randomUUID())
+                .build();
 
         if (contactRepository.existsContactByNameAndUser(contact.getName(), user)) {
             throw new ContactAlreadyExistsException(contact.getName());
@@ -72,8 +73,10 @@ public class ContactServiceImpl implements ContactService {
             throw new PhoneNumbersAlreadyExistException();
         }
 
-        String imageUrl = imageService.saveImage(image, contact.getUuid());
-        contact.setImageUrl(imageUrl);
+        if (image != null) {
+            String imageUrl = imageService.saveImage(image, contact.getUuid());
+            contact.setImageUrl(imageUrl);
+        }
 
         contactRepository.save(contact);
     }
@@ -91,25 +94,22 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public void updateContact(ContactRequest contactRequest, MultipartFile image, String token) {
-        Contact updatedContact = Contact.builder()
-                .name(contactRequest.getName())
-                .emails(contactRequest.getEmails())
-                .phoneNumbers(contactRequest.getPhoneNumbers())
-                .build();
-
         String username = jwtService.extractUsername(token);
         User user = userService.getUserByUsername(username);
 
-        Contact existingContact = contactRepository
+        Contact contact = contactRepository
                 .findByNameAndUser(contactRequest.getName(), user)
                 .orElseThrow(() -> new ContactNotFoundException(contactRequest.getName()));
 
-        updatedContact.setId(existingContact.getId());
-        updatedContact.setUser(user);
-        updatedContact.setUuid(existingContact.getUuid());
+        if (image != null) {
+            String imageUrl = imageService.saveImage(image, contact.getUuid());
+            contact.setImageUrl(imageUrl);
+        }
 
-        imageService.saveImage(image, updatedContact.getUuid());
+        contact.setName(contactRequest.getName());
+        contact.setEmails(contactRequest.getEmails());
+        contact.setPhoneNumbers(contactRequest.getPhoneNumbers());
 
-        contactRepository.save(updatedContact);
+        contactRepository.save(contact);
     }
 }

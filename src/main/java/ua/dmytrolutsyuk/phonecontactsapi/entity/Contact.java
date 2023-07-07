@@ -39,7 +39,7 @@ public class Contact {
     @Column(name = "phone_number", unique = false, nullable = false)
     private Set<String> phoneNumbers;
 
-    @Column(name = "image_url", unique = true, nullable = false)
+    @Column(name = "image_url", unique = true, nullable = true)
     private String imageUrl;
 
     @Column(name = "uuid", unique = true, nullable = false)

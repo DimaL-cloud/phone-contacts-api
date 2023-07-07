@@ -32,7 +32,7 @@ public class ContactController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Add a new contact")
     public ResponseEntity<Void> addContact(@RequestPart("contact_request") @Valid ContactRequest ContactRequest,
-                                           @RequestPart("image") MultipartFile image,
+                                           @RequestPart(name = "image", required = false) MultipartFile image,
                                            @RequestHeader(name = "Authorization") String token) {
         contactService.addContact(ContactRequest, image, token.substring(7));
 
@@ -50,7 +50,7 @@ public class ContactController {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Update a contact")
     public ResponseEntity<Void> updateContact(@RequestPart("contact_request") @Valid ContactRequest ContactRequest,
-                                              @RequestPart("image") MultipartFile image,
+                                              @RequestPart(name = "image", required = false) MultipartFile image,
                                               @RequestHeader(name = "Authorization") String token) {
         contactService.updateContact(ContactRequest, image, token.substring(7));
 
