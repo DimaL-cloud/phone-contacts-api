@@ -39,7 +39,6 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
     private List<Contact> contacts;
 
     @Override
