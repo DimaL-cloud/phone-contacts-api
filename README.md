@@ -4,10 +4,13 @@ A service for keeping all contacts together
 ## Stack 💻
 Java, Spring Boot, Data, Security, PostgreSQL, Lombok, Flyway, Docker, Kubernetes, Gmail SMTP, Azure Blob storage
 
+## API :coffee:
+http://iasasc.centralindia.cloudapp.azure.com:8888/swagger-ui/index.html#/
+
 ## System design diagram 💡
 ![phone-contacts-api-system-design](https://github.com/DimaL-cloud/phone-contacts-api/assets/78265212/096101b1-20d1-478f-b0b1-3d1b14b32827)
 
-## Installation
+## Installation :minidisc:
 
 1. Clone the repository:
 ```
