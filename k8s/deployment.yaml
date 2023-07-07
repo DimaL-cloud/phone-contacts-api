@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phone-contacts-api
+  labels:
+    app: phone-contacts-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: phone-contacts-api
+  template:
+    metadata:
+      labels:
+        app: phone-contacts-api
+    spec:
+      containers:
+        - name: phone-contacts-api
+          image: dimalutsyuk/phone-contacts-api:final
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATASOURCE_HOST
+              value: 10.2.0.4

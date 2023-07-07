@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "confirmation_tokens")
+@Table(name = "confirmation_token")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
