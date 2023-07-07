@@ -14,5 +14,8 @@ spring:
     port: 587
   flyway:
     baseline-on-migrate: true
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1
 
-network-address: http://iasasc.centralindia.cloudapp.azure.com/
+network-address: http://localhost:8080

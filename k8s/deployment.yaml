@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: phone-contacts-api
-          image: dimalutsyuk/phone-contacts-api:final
+          image: dimalutsyuk/phone-contacts-api:latest
           ports:
             - containerPort: 8080
           env:

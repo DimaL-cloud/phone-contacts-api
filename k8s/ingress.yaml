@@ -7,7 +7,7 @@ spec:
     - http:
         paths:
           - pathType: Prefix
-            path: /phone-contacts-api
+            path: /
             backend:
               service:
                 name: cats-api
